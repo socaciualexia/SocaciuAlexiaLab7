@@ -32,7 +32,7 @@ public partial class ShopPage : ContentPage
 
         var myLocation = await Geolocation.GetLocationAsync();
 
-        var distance = myLocation.CalculateDistance(location, DistanceUnits.Kilometers);
+        var distance = myLocation.CalculateDistance(shoplocation, DistanceUnits.Kilometers);
         if (distance < 5)
         {
             var request = new NotificationRequest

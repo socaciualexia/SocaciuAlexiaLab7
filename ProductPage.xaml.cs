@@ -7,7 +7,7 @@ namespace SocaciuAlexiaLab7
         public ProductPage(ShopList shopList)
         {
             InitializeComponent();
-            BindingContext = shopList; 
+            BindingContext = shopList;
         }
 
         async void OnSaveButtonClicked(object sender, EventArgs e)
