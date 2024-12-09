@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SocaciuAlexiaLab7.Models;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SocaciuAlexiaLab7.Data
 {
@@ -15,9 +12,15 @@ namespace SocaciuAlexiaLab7.Data
         public ShoppingListDatabase(string dbPath)
         {
             _database = new SQLiteAsyncConnection(dbPath);
+            _database.CreateTableAsync<Shop>().Wait();
             _database.CreateTableAsync<ShopList>().Wait();
             _database.CreateTableAsync<Product>().Wait();
             _database.CreateTableAsync<ListProduct>().Wait();
+        }
+
+        public Task<List<Shop>> GetShopsAsync()
+        {
+            return _database.Table<Shop>().ToListAsync();
         }
 
         public Task<List<ShopList>> GetShopListsAsync()
@@ -95,6 +98,18 @@ namespace SocaciuAlexiaLab7.Data
             + " inner join ListProduct LP"
             + " on P.ID = LP.ProductID where LP.ShopListID = ?",
             shoplistid);
+        }
+
+        public Task<int> SaveShopAsync(Shop shop)
+        {
+            if (shop.ID != 0)
+            {
+                return _database.UpdateAsync(shop);
+            }
+            else
+            {
+                return _database.InsertAsync(shop);
+            }
         }
     }
 }
