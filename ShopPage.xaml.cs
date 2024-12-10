@@ -1,38 +1,44 @@
-using Microsoft.Maui.Devices.Sensors;
 using Plugin.LocalNotification;
 using SocaciuAlexiaLab7.Models;
-
 namespace SocaciuAlexiaLab7;
 
 public partial class ShopPage : ContentPage
 {
-	public ShopPage()
-	{
-		InitializeComponent();
-	}
-
-    async void OnSaveButtonClicked(object sender, EventArgs e)
+    public ShopPage()
     {
-        var shop = (Shop)BindingContext;
+        InitializeComponent();
+
+        BindingContext = new Shop
+        {
+            Adress = "123 Main Street",
+            ShopName = "Default Shop Name"
+        };
+    }
+
+    private async void OnSaveButtonClicked(object sender, EventArgs e)
+    {
+        var shop = (Shop)this.BindingContext;
         await App.Database.SaveShopAsync(shop);
+        await DisplayAlert("Success", "Shop saved successfully!", "OK");
         await Navigation.PopAsync();
     }
 
-    async void OnShowMapButtonClicked(object sender, EventArgs e)
+    private async void OnShowMapButtonClicked(object sender, EventArgs e)
     {
-        var shop = (Shop)BindingContext;
+        var shop = (Shop)this.BindingContext;
         var address = shop.Adress;
-        var locations = await Geocoding.GetLocationsAsync(address);
+
+        var shoplocation = new Location(46.7492379, 23.5745597);
 
         var options = new MapLaunchOptions
         {
-            Name = "Magazinul meu preferat" };
-        
-        var shoplocation = locations?.FirstOrDefault();
+            Name = "Magazinul meu preferat"
+        };
 
-        var myLocation = await Geolocation.GetLocationAsync();
+        var myLocation = new Location(46.7731796289, 23.6213886738);
 
         var distance = myLocation.CalculateDistance(shoplocation, DistanceUnits.Kilometers);
+
         if (distance < 5)
         {
             var request = new NotificationRequest
@@ -47,7 +53,6 @@ public partial class ShopPage : ContentPage
             LocalNotificationCenter.Current.Show(request);
         }
 
-
         await Map.OpenAsync(shoplocation, options);
-        }
-        }
+    }
+}
